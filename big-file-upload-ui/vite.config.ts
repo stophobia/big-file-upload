@@ -7,15 +7,15 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
 
-    alias:{
-    '@/': path.resolve(__dirname, 'src/')
-    }
-    // alias: [
-    //   {
-    //     find: /\/@\//,
-    //     replacement: path.resolve(process.cwd(), '.','src') +'/'
-    //   }
-    // ]
+    // alias:{
+    // '@/': path.resolve(process.cwd(), '.','src')
+    // }
+    alias: [
+      {
+        find: /\@\//,
+        replacement: path.resolve(process.cwd(), '.','src') +'/'
+      }
+    ]
  
   },
   server: {

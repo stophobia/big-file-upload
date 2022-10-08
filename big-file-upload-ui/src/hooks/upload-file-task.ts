@@ -3,9 +3,13 @@ import { computed, ComputedRef, Ref, ref } from 'vue'
 import md5, { calculateFileHash } from '../utils/hash'
 
 import QueueCreate from 'promise-queue-plus/create'
-import { FileChunk, FileUploadCheckResult, FileUploadChunk } from '@/models/upload-file-model'
+import {
+  FileChunk,
+  FileUploadCheckResult,
+  FileUploadChunk
+} from '@/models/upload-file-model'
 // import Queue from 'promise-queue-plus'
-
+import { uploadFileBlock, mergeFileChunks, fileUploadCheck } from '@/api/upload'
 /// 切片大小
 const CHUNK_SIZE = 3 * 1024 * 1024
 
@@ -75,22 +79,6 @@ export function useUploadFileTask(
     return 0
   })
 
-  /// 1.检测上传文件状态。是否已经上传完成、上传进度
-  // 文件已上传返回什么？
-  async function fileUploadCheck(
-    file: File,
-    chunkSize: number
-  ): Promise<FileUploadCheckResult> {
-    const r = await axios.post('/file/upload/check', {
-      name: file.name,
-      size: file.size, // 文件大小
-      partSize: chunkSize, // 分片大小
-      lastModified: file.lastModified // 文件修改时间
-    })
-    console.log(r)
-    return r.data as FileUploadCheckResult
-  }
-
   /// 2.文件切割，过滤已上传的块
   const createFileUploadChunks = async (
     file: File,
@@ -132,49 +120,33 @@ export function useUploadFileTask(
     const index = fileChunk.index
     const md5Digest = await md5(fileBlob)
     console.log({ md5Digest })
-    const r = await axios.post(
-      '/file/upload/' + uploadId + '/part',
-      {
-        files: new File(
-          [fileBlob],
-          uploadId + '-' + md5Digest + '.part' + index
-        ),
-        index: index,
-        md5Digest: md5Digest,
-        uploadId: uploadId
-      },
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-          //  'Content-Type' :'application/x-www-form-urlencoded'
-        },
-        onUploadProgress: (progressEvent: any) => {
-          fileChunk.percent =
-            ((progressEvent.loaded / progressEvent.total) * 100) | 0
-          console.log(
-            'progressEvent' +
-              progressEvent.loaded +
-              ' ' +
-              progressEvent.total +
-              ' ' +
-              fileChunk.percent
-          )
-        }
+
+    const params = {
+      uploadId: uploadId,
+      index: index,
+      fileBlob: fileBlob,
+      md5Digest: md5Digest,
+      onUploadProgress: (progressEvent: any) => {
+        fileChunk.percent =
+          ((progressEvent.loaded / progressEvent.total) * 100) | 0
+        console.log(
+          'progressEvent' +
+            progressEvent.loaded +
+            ' ' +
+            progressEvent.total +
+            ' ' +
+            fileChunk.percent
+        )
       }
-    )
+    }
+    const data = await uploadFileBlock(params)
     return {
-      data: r.data,
+      data: data,
       fileChunk
     }
   }
 
   /// 4.合并切片
-  async function mergeFileChunks(uploadId: string) {
-    const r = await axios.post('/file/merge', {
-      uploadId: uploadId
-    })
-    return r
-  }
 
   const startUpload = async () => {
     const uploadFile = file

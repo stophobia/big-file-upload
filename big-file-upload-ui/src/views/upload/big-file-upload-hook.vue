@@ -3,7 +3,7 @@ import { computed, ComputedRef, defineComponent, ref } from 'vue'
 // import request from 'umi-request';
 import { UploadOutlined } from '@ant-design/icons-vue'
 import { UploadProps } from 'ant-design-vue'
-import { useUploadFile } from '../hooks/upload-file'
+import { useUploadFile } from '@/hooks/upload-file'
 
 // defineProps<{ msg: string }>()
 defineComponent({ UploadOutlined })

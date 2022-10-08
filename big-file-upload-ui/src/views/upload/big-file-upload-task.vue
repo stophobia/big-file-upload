@@ -7,7 +7,7 @@ import {
   useUploadFileTask,
   UploadFileTask,
   createTaskId
-} from '../hooks/upload-file-task'
+} from '@/hooks/upload-file-task'
 
 /// 进一步封装上传任务
 

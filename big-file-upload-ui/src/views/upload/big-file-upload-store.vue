@@ -4,8 +4,8 @@ import { computed, ComputedRef, defineComponent, Ref, ref } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import { UploadProps } from 'ant-design-vue'
 
-import { useUploadFileStore } from '../store/upload-file-store'
-import { UploadFileTask } from '../hooks/upload-file-task'
+import { useUploadFileStore } from '@/store/upload-file-store'
+import { UploadFileTask } from '@/hooks/upload-file-task'
 
 // defineProps<{ msg: string }>()
 defineComponent({ UploadOutlined })

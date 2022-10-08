@@ -5,33 +5,13 @@ import md5 from '../utils/hash'
 import QueueCreate from 'promise-queue-plus/create'
 // import Queue from 'promise-queue-plus'
 
-interface FileUploadChunk {
-  index: number // 分片索引
-  // md5Digest?: string // 分片MD5
-  // exist: boolean // 分片是否已上传
-}
+import { uploadFileBlock, mergeFileChunks, fileUploadCheck } from '@/api/upload'
 
-interface FileChunk {
-  fileBlob: Blob
-  index: number
-  size: number
-  percent: number
-}
-
-interface FileUploadCheckParams {
-  name: string // 文件名
-  size: number // 文件大小
-  partSize: number // 分片大小
-  lastModified: number // 文件修改时间
-}
-
-/// 检测文件返回值
-interface FileUploadCheckResult {
-  uploadId: string // 文件上传记录标识，md5(name=xxx.xxxsize=1234lastModified=16628000) 作为唯一标识
-  partCount: number //分片数量
-  data: FileUploadChunk[] // 历史分片列表
-  finish: boolean // 是否存在
-}
+import {
+  FileChunk,
+  FileUploadCheckResult,
+  FileUploadChunk
+} from '@/models/upload-file-model'
 
 /// 切片大小
 const CHUNK_SIZE = 3 * 1024 * 1024
@@ -96,21 +76,6 @@ export function useUploadFile(
     return 0
   })
 
-  /// 1.检测上传文件状态。是否已经上传完成、上传进度
-  // 文件已上传返回什么？
-  async function fileUploadCheck(
-    file: File,
-    chunkSize: number
-  ): Promise<FileUploadCheckResult> {
-    const r = await axios.post('/file/upload/check', {
-      name: file.name,
-      size: file.size, // 文件大小
-      partSize: chunkSize, // 分片大小
-      lastModified: file.lastModified // 文件修改时间
-    })
-    console.log(r)
-    return r.data as FileUploadCheckResult
-  }
 
   /// 2.文件切割，过滤已上传的块
   const createFileUploadChunks = async (
@@ -189,14 +154,7 @@ export function useUploadFile(
     }
   }
 
-  /// 4.合并切片
-  async function mergeFileChunks(uploadId: string) {
-    const r = await axios.post('/file/merge', {
-      uploadId: uploadId
-    })
-    return r
-  }
-
+ 
   const startUpload = async () => {
     const uploadFile = file.value
 

@@ -8,7 +8,7 @@ import SparkMD5 from 'spark-md5'
  * @return {*}
  */
 const md5 = (file: Blob, chunkSize = 2097152) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     let blobSlice =
       File.prototype.slice ||
       File.prototype.mozSlice ||
