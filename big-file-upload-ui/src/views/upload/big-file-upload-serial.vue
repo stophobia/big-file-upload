@@ -112,7 +112,8 @@ const uploadFile = async (file: File) => {
   await mergeFileChunks(fileUploadCheckResult.value.uploadId)
   console.log('上传完成')
   const end = new Date().getTime()
-  console.log('用时' + (end - start)) //116.9 MB 用时3794
+  time.value = end - start
+  console.log('用时' + (time.value)) //116.9 MB 用时3794
   uploading.value = false
 
   return

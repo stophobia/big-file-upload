@@ -122,7 +122,8 @@ const uploadFile = async (file: File) => {
       console.log('上传完成')
       uploading.value = false
       const end = new Date().getTime()
-      console.log('用时' + (end - start)) // 116.9 MB 用时1762
+      time.value = end - start
+      console.log('用时' + (time.value)) // 116.9 MB 用时1762
     })
     .catch((e) => {
       console.log(e)
