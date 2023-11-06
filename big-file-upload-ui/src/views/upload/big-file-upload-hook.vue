@@ -48,11 +48,10 @@ const handleUpload = async () => {
       @click="handleUpload">
       {{ uploading ? 'Uploading' : 'Start Upload' }}
     </a-button>
-    <span>计算时间：{{timeCost}}</span>
+    <span>calculating time : {{timeCost}}</span>
     <div>
-      进度{{percent}}
+      Progress : {{percent}}
     </div>
-
   </div>
 </template>
 

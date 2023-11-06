@@ -20,26 +20,26 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // 字符串简写写法
+      // String abbreviation
       // 'upload': 'http://localhost:3000',
-      // 选项写法
+      // option writing
       '/file': {
         target: 'http://localhost:3000',
         changeOrigin: true
         // rewrite: (path) => path.replace(/^\/api/, '')
       }
-      // 正则表达式写法
+      // Regular expression writing
       // '^/fallback/.*': {
       //   target: 'http://jsonplaceholder.typicode.com',
       //   changeOrigin: true,
       //   rewrite: (path) => path.replace(/^\/fallback/, '')
       // },
-      // 使用 proxy 实例
+      // Using proxy instance
       // '/api': {
       //   target: 'http://jsonplaceholder.typicode.com',
       //   changeOrigin: true,
       //   configure: (proxy, options) => {
-      //     // proxy 是 'http-proxy' 的实例
+      //     // proxy is an instance of 'http-proxy'
       //   }
       // },
       // // Proxying websockets or socket.io

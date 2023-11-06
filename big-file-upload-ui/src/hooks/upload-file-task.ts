@@ -10,7 +10,7 @@ import {
 } from '@/models/upload-file-model'
 // import Queue from 'promise-queue-plus'
 import { uploadFileBlock, mergeFileChunks, fileUploadCheck } from '@/api/upload'
-/// 切片大小
+/// Section size
 const CHUNK_SIZE = 3 * 1024 * 1024
 
 export function useUploadFileTask(
@@ -20,21 +20,21 @@ export function useUploadFileTask(
     taskComplete?: (task: UploadFileTask, info?: any) => void
   }
 ): UploadFileTask {
-  // 控制上传任务的队列
+  // Control the queue of upload tasks
   const Queue = QueueCreate(Promise)
   // Queue.use(Promise)
-  //Realize a queue with a maximum concurrency of 1
+  // Realize a queue with a maximum concurrency of 1
   var queue1 = Queue(6, {
-    retry: 3, //Number of retries
-    retryIsJump: true, //retry now?
-    timeout: 60000, //The timeout period
+    retry: 3, // Number of retries
+    retryIsJump: true, // retry now?
+    timeout: 60000, // The timeout period
     workResolve: async function (value: any, queue: any) {
       console.log('workResolve ' + JSON.stringify(value))
       uploadedSize.value += (value.fileChunk as FileChunk).size
     },
     workReject: function (reason: any, queue: any) {
       // uploading.value = false
-      console.log('上传失败' + reason + ' ' + JSON.stringify(queue))
+      console.log('upload failed' + reason + ' ' + JSON.stringify(queue))
     },
     workFinally: function (queue: any) {
       // console.log('workFinally')
@@ -47,27 +47,27 @@ export function useUploadFileTask(
       uploading.value = false
       if (percent.value === 1) {
       } else {
-        console.log('queueEnd 上传失败')
+        console.log('queueEnd upload failed')
         if (config?.taskComplete) {
-          config.taskComplete(task, '上传失败')
+          config.taskComplete(task, 'upload failed')
         }
       }
     }
   })
   const id = createTaskId(file)
-  // 是否上传中
+  // Is uploading
   const uploading = ref<boolean>(false)
-  // 分片大小
+  // Shard size
   const chunkSize = config?.chunkSize ?? CHUNK_SIZE
-  // 检测文件的状态
+  // Check the status of a file
   const fileUploadCheckResult = ref<FileUploadCheckResult | undefined>(
     undefined
   )
-  // 已上传的大小
+  // Uploaded size
   const uploadedSize = ref<number>(0)
-  // 上传开始时间
+  // Upload start time
   const start = ref<number>(0)
-  // 上传使用的时间
+  // Upload time used
   const timeCost = ref<number>(0)
 
   const percent = computed(() => {
@@ -79,7 +79,7 @@ export function useUploadFileTask(
     return 0
   })
 
-  /// 2.文件切割，过滤已上传的块
+  // 2.File cutting, filtering uploaded chunks
   const createFileUploadChunks = async (
     file: File,
     chunkSize = CHUNK_SIZE
@@ -88,7 +88,7 @@ export function useUploadFileTask(
     const map: Map<number, FileUploadChunk> = new Map()
     if (fileUploadCheckResult.value && fileUploadCheckResult.value.data) {
       fileUploadCheckResult.value.data.forEach((item) => {
-        // 计算已上传的数据
+        // Calculate uploaded data
         uploadedSize.value += chunkSize
         map.set(item.index, item)
       })
@@ -97,9 +97,9 @@ export function useUploadFileTask(
     let cur = 0
     let index = 0
     while (cur < file.size) {
-      // 过滤已上传的
+      // Filter uploaded
       if (!map.get(index)) {
-        // file.slice 返回一个 blob对象
+        // file.slice returns a blob object
         const chunkBold = file.slice(cur, cur + chunkSize)
         fileChunkList.push({
           fileBlob: chunkBold,
@@ -114,7 +114,7 @@ export function useUploadFileTask(
     return fileChunkList
   }
 
-  /// 3.上传切片
+  /// 3.Upload slices
   async function uploadChunk(fileChunk: FileChunk, uploadId: string) {
     const fileBlob = fileChunk.fileBlob
     const index = fileChunk.index
@@ -146,26 +146,26 @@ export function useUploadFileTask(
     }
   }
 
-  /// 4.合并切片
+  /// 4.Merge slices
 
   const startUpload = async () => {
     const uploadFile = file
     if (!uploadFile) {
-      console.log('未选择文件')
+      console.log('No file selected')
       if (config?.taskComplete) {
-        config.taskComplete(task, '未选择文件')
+        config.taskComplete(task, 'No file selected')
       }
       return
     }
 
-    // 获取文件上传的状态
+    // Get the status of file upload
     fileUploadCheckResult.value = await fileUploadCheck(uploadFile!, chunkSize)
     console.log(
       ' fileUploadCheckResult.value' +
         JSON.stringify(fileUploadCheckResult.value)
     )
     if (fileUploadCheckResult.value.finish) {
-      console.log('文件已存在')
+      console.log('File already exists')
       uploadedSize.value = file.size
       if (config?.taskComplete) {
         config.taskComplete(task)
@@ -173,7 +173,7 @@ export function useUploadFileTask(
       return
     }
 
-    // 获取需要上传的切片
+    // Get the slices to be uploaded
     const fileChunkList: FileChunk[] = await createFileUploadChunks(
       uploadFile!,
       chunkSize
@@ -188,7 +188,7 @@ export function useUploadFileTask(
     }
     start.value = new Date().getTime()
     queue1.onError = function (err: any) {
-      const msg = 'onError 完成 出错了 ' + err
+      const msg = 'onError Done something went wrong' + err
       console.log(msg)
       if (config?.taskComplete) {
         config.taskComplete(task, msg)
@@ -204,11 +204,11 @@ export function useUploadFileTask(
         // { workResolve: log }
       )
       .then(async () => {
-        console.log('开始merge')
+        console.log('Start merging')
         await mergeFileChunks(fileUploadCheckResult.value?.uploadId!)
-        console.log('上传完成')
+        console.log('upload completed')
         const end = new Date().getTime()
-        console.log('用时' + (timeCost.value = end - start.value)) // 116.9 MB 6路并发 用时1697
+        console.log('time cost' + (timeCost.value = end - start.value))
         uploading.value = false
 
         if (config?.taskComplete) {
@@ -216,7 +216,7 @@ export function useUploadFileTask(
         }
       })
       .catch((e: any) => {
-        console.log('上传完成 出错' + e)
+        console.log('Upload completed error' + e)
       })
     queue1.start()
     return

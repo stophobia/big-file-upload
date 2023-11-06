@@ -63,11 +63,11 @@ const percent = computed(() => {
       @click="handleUpload">
       {{ uploading ? 'Uploading' : 'Start Upload' }}
     </a-button>
-    <span>计算时间：{{timeCost}}</span>
+    <span>Calculation time : {{timeCost}}</span>
     <div>
-      <!-- 进度{{ taskRef  ? taskRef.percent : 0}}
+      <!-- Progress : {{ taskRef  ? taskRef.percent : 0}}
        -->
-      进度 {{percent}}
+      Progress : {{percent}}
     </div>
 
   </div>

@@ -5,9 +5,9 @@ const fs = require('fs')
 const Busboy = require('busboy')
 
 /**
- * 同步创建文件目录
- * @param  {string} dirname 目录绝对地址
- * @return {boolean}        创建目录结果
+ * Synchronously create file directories
+ * @param  {string} dirname Directory absolute address
+ * @return {boolean}        Create catalog results
  */
 function mkdirsSync(dirname) {
   if (fs.existsSync(dirname)) {
@@ -21,9 +21,9 @@ function mkdirsSync(dirname) {
 }
 
 /**
- * 获取上传文件的后缀名
- * @param  {string} fileName 获取上传文件的后缀名
- * @return {string}          文件后缀名
+ * Get the suffix of the uploaded file
+ * @param  {string} fileName Get the suffix of the uploaded file
+ * @return {string}          File extension
  */
 function getSuffixName(fileName) {
   let nameList = fileName.split('.')
@@ -31,9 +31,9 @@ function getSuffixName(fileName) {
 }
 
 /**
- * 上传文件
- * @param  {object} ctx     koa上下文
- * @param  {object} options 文件上传参数 fileType文件类型， path文件存放路径
+ * upload files
+ * @param  {object} ctx     koa upper and lower sentence
+ * @param  {object} options File upload parameters fileType file type, path file storage path
  * @return {promise}
  */
 function uploadFile(ctx, options) {
@@ -41,18 +41,18 @@ function uploadFile(ctx, options) {
   let res = ctx.res
   let busboy = Busboy({ headers: req.headers })
 
-  // 获取类型
+  // Get type
   let fileType = options.fileType || 'common'
   let filePath = path.join(options.path, fileType)
 
   return new Promise((resolve, reject) => {
-    console.log('文件上传中...')
+    console.log('File uploading...')
     let result = {
       success: false,
       formData: {}
     }
 
-    // 解析请求文件事件
+    // Parse request file event
     busboy.on('file', function (fieldname, file, fileInfo) {
       console.log({ fileInfo, fieldname })
       let fileName = fileInfo.filename.split('.')[0]
@@ -67,22 +67,22 @@ function uploadFile(ctx, options) {
       let _uploadFilePath = path.join(filePath, fileName)
       let saveTo = path.join(_uploadFilePath)
 
-      // 文件保存到制定路径
+      // Save the file to the specified path
       file.pipe(fs.createWriteStream(saveTo))
 
-      // 文件写入事件结束
+      // File write event ends
       file.on('end', function () {
         result.success = true
-        result.message = '文件上传成功'
-        console.log('文件上传成功！')
+        result.message = 'File uploaded successfully'
+        console.log('File uploaded successfully!')
         resolve(result)
       })
     })
 
-    // 解析表单中其他字段信息
+    // Parse other field information in the form
     busboy.on('field', function (fieldname, val, info) {
       console.log(
-        '表单字段数据 [' +
+        'form field data [' +
           fieldname +
           ']: value: ' +
           val +
@@ -92,15 +92,15 @@ function uploadFile(ctx, options) {
       result.formData[fieldname] = inspect(val)
     })
 
-    // 解析结束事件
+    // parse end event
     busboy.on('finish', function () {
-      console.log('文件上结束')
+      console.log('end on file')
       resolve(result)
     })
 
-    // 解析错误事件
+    // Parse error events
     busboy.on('error', function (err) {
-      console.log('文件上出错')
+      console.log('Error on file')
       reject(result)
     })
 

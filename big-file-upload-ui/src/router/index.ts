@@ -1,14 +1,14 @@
 import { App } from 'vue'
 import * as VueRouter from 'vue-router'
 
-// 1. 定义路由组件.
-// 也可以从其他文件导入
+// 1. Define the routing component.
+// You can also import from other files
 const Home = { template: '<div>Home</div>' }
 const About = { template: '<div>About</div>' }
 
-// 2. 定义一些路由
-// 每个路由都需要映射到一个组件。
-// 我们后面再讨论嵌套路由。
+// 2. Define some routes
+// Each route needs to be mapped to a component.
+// We will discuss nested routing later.
 const routes = [
   { path: '/', component: () => import('../views/home/index.vue') },
   {
@@ -37,18 +37,18 @@ const routes = [
   }
 ]
 
-// 3. 创建路由实例并传递 `routes` 配置
-// 你可以在这里输入更多的配置，但我们在这里
-// 暂时保持简单
+// 3. Create a routing instance and pass the `routes` configuration
+// You can enter more configuration here, but here we are
+// Keep it simple for now
 const router = VueRouter.createRouter({
-  // 4. 内部提供了 history 模式的实现。为了简单起见，我们在这里使用 hash 模式。
+  // 4. The implementation of history mode is provided internally. For simplicity, we use hash mode here.
   history: VueRouter.createWebHashHistory(),
-  routes // `routes: routes` 的缩写
+  routes // Abbreviation for `routes: routes`
 })
 
-// 配置路由
+// Configure routing
 export const setupRouter = (app: App<Element>) => {
-  //确保 _use_ 路由实例使
-  //整个应用支持路由。
+  //Make sure _use_ the route instance uses
+  //The entire application supports routing.
   app.use(router)
 }

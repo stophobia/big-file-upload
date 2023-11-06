@@ -9,8 +9,7 @@ import {
   createTaskId
 } from '@/hooks/upload-file-task'
 
-/// 进一步封装上传任务
-
+// Further encapsulate upload tasks
 
 // defineProps<{ msg: string }>()
 defineComponent({ UploadOutlined })
@@ -78,12 +77,11 @@ const handleUpload = async () => {
       <div>
         id:{{item.id}}
       </div>
-      <span>计算时间：{{item.timeCost}}</span>
+      <span>calculating time : {{item.timeCost}}</span>
       <div>
-        进度{{item.percent}}
+        Progress : {{item.percent}}
       </div>
     </div>
-
   </div>
 </template>
 

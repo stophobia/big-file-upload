@@ -2,15 +2,10 @@
 import { defineComponent, ref } from 'vue'
 // import request from 'umi-request';
 import { UploadOutlined } from '@ant-design/icons-vue'
-
 import type { UploadProps } from 'ant-design-vue'
-
 import axios from 'axios'
-
 import { uploadFileBlock, mergeFileChunks, fileUploadCheck } from '@/api/upload'
-
 import { FileUploadCheckResult, FileChunk, FileUploadChunk } from '@/models/upload-file-model'
-
 import md5 from '@/utils/hash'
 
 defineComponent({ UploadOutlined })
@@ -41,7 +36,7 @@ const fileUploadCheckResult = ref<FileUploadCheckResult | undefined>(undefined)
 const percentage = ref<number>(0)
 const uploadedSize = ref<number>(0)
 
-/// 2.文件切片
+// 2.file slice
 const CHUNK_SIZE = 3 * 1024 * 1024
 const createFileUploadChunks = async (
   file: File,
@@ -52,7 +47,7 @@ const createFileUploadChunks = async (
   if (fileUploadCheckResult.value && fileUploadCheckResult.value.data) {
     fileUploadCheckResult.value.data.forEach((item) => {
       // if (item.exist) {
-      // 计算已上传的数据
+      // Calculate uploaded data
       uploadedSize.value += chunkSize
       map.set(item.index, item)
       // }
@@ -63,9 +58,9 @@ const createFileUploadChunks = async (
   let cur = 0
   let index = 0
   while (cur < file.size) {
-    // 过滤已上传的
+    // Filter uploaded
     if (!map.get(cur)) {
-      // file.slice 返回一个 blob对象
+      // file.slice returns a blob object
       const chunkBold = file.slice(cur, cur + chunkSize)
       fileChunkList.push({
         fileBlob: chunkBold,
@@ -80,24 +75,24 @@ const createFileUploadChunks = async (
   return fileChunkList
 }
 
-/// 3.上传切片
+/// 3.Upload slices
 const uploadFile = async (file: File) => {
   //  const md5Digest2 = await md5(file)
   // console.log({md5Digest2});
 
   const chunkSize = CHUNK_SIZE
-  // 获取文件上传的状态
+  // Get the status of file upload
   fileUploadCheckResult.value = await fileUploadCheck(file, chunkSize)
   console.log(
     ' fileUploadCheckResult.value' + JSON.stringify(fileUploadCheckResult.value)
   )
 
   if (fileUploadCheckResult.value.finish) {
-    console.log('文件已存在')
+    console.log('File already exists')
     return
   }
 
-  // 获取需要上传的切片
+  // Get the slices to be uploaded
   const fileChunkList: FileChunk[] = await createFileUploadChunks(
     file,
     chunkSize
@@ -115,15 +110,15 @@ const uploadFile = async (file: File) => {
 
   Promise.all(jobs)
     .then(() => {
-      console.log('开始merge')
+      console.log('Start merging')
       return mergeFileChunks(fileUploadCheckResult.value!.uploadId)
     })
     .then(() => {
-      console.log('上传完成')
+      console.log('upload completed')
       uploading.value = false
       const end = new Date().getTime()
       time.value = end - start
-      console.log('用时' + (time.value)) // 116.9 MB 用时1762
+      console.log('time cost' + (time.value))
     })
     .catch((e) => {
       console.log(e)
@@ -162,7 +157,7 @@ const uploadChunk = async (fileChunk: FileChunk, uploadId: string) => {
       @click="handleUpload">
       {{ uploading ? 'Uploading' : 'Start Upload' }}
     </a-button>
-    <span>计算时间：{{time}}</span>
+    <span>calculating time : {{time}}</span>
 
   </div>
 </template>

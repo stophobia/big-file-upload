@@ -1,9 +1,9 @@
 import SparkMD5 from 'spark-md5'
 /**
- * @description: md加密
+ * @description: md encryption
  * @param {*
- * file:文件对象
- * chunkSize:单位大小   default Read in chunks of 2MB
+ * file: file object
+ * chunkSize: unit size : default Read in chunks of 2MB
  * }
  * @return {*}
  */
@@ -15,15 +15,15 @@ const md5 = (file: Blob, chunkSize = 2097152) => {
       File.prototype.webkitSlice
     let chunks = Math.ceil(file.size / chunkSize)
     let currentChunk = 0
-    let spark = new SparkMD5.ArrayBuffer() //追加数组缓冲区。
-    let fileReader = new FileReader() //读取文件
+    let spark = new SparkMD5.ArrayBuffer() // Append array buffer.
+    let fileReader = new FileReader() // read file
     fileReader.onload = function (e) {
       spark.append(e.target.result)
       currentChunk++
       if (currentChunk < chunks) {
         loadNext()
       } else {
-        let md5 = spark.end() //完成md5的计算，返回十六进制结果。
+        let md5 = spark.end() // Complete the calculation of md5 and return the hexadecimal result.
         resolve(md5)
         // console.log(md5);
       }
@@ -46,11 +46,11 @@ const md5 = (file: Blob, chunkSize = 2097152) => {
 }
 export default md5
 
-// 使用 web-worker 计算 hash
+// Use web-worker to calculate hash
 const calculateHash = (file: File) => {
   console.log(file)
   return new Promise((resolve) => {
-    // 添加 worker 属性
+    // Add worker attribute
     // this.worker = new Worker('/hash.js');
     // this.worker.postMessage({ fileChunkList });
     // this.worker.onmessage = (e) => {
@@ -62,28 +62,28 @@ const calculateHash = (file: File) => {
     // };
     const spark = new SparkMD5.ArrayBuffer()
     const reader = new FileReader()
-    // 文件大小
+    // File size
     const size = file.size
     let offset = 2 * 1024 * 1024
     let chunks = [file.slice(0, offset)]
-    // 前面100K
+    // Front 100K
     let cur = offset
     while (cur < size) {
-      // 最后一块全部加进来
+      // Add the last piece all in
       if (cur + offset >= size) {
         chunks.push(file.slice(cur, cur + offset))
       } else {
-        // 中间的 前中后去两个字节
+        // In the middle, remove two bytes from the front to the middle.
         const mid = cur + offset / 2
         const end = cur + offset
         chunks.push(file.slice(cur, cur + 2))
         chunks.push(file.slice(mid, mid + 2))
         chunks.push(file.slice(end - 2, end))
       }
-      // 前取两个字节
+      // Take the first two bytes
       cur += offset
     }
-    // 拼接
+    // Splicing
     reader.readAsArrayBuffer(new Blob(chunks))
     reader.onload = (e) => {
       spark.append(e.target.result)

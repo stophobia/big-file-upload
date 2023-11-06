@@ -13,7 +13,7 @@ export const useUploadFileStore = defineStore('counter', () => {
   //   return uploadTaskList.value.some((item) => item.uploading)
   // })
 
-  // 获取上传任务，如果不存在创建任务
+  // Get the upload task and create the task if it does not exist
   function getUploadFileTaskCreateIfNeeded(file: File, autoStart = true) {
     const taskId = createTaskId(file)
     const task = uploadTaskList.value.find((item) => {

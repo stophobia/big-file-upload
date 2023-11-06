@@ -9,7 +9,7 @@ router.get('/upload/test', function (ctx, next) {
   ctx.body = 'this is a file/upload/test response!'
 })
 
-/// 检测文件
+/// detection file
 router.post('/upload/check', async function (ctx, next) {
   let postData = ctx.request.body
   console.log('/upload/check postData' + JSON.stringify(postData))
@@ -40,18 +40,18 @@ router.post('/upload/check', async function (ctx, next) {
   }
 })
 
-/// 文件上传
+/// File Upload
 router.post('/upload/:uploadId/part', async function (ctx, next) {
   let postData = ctx.request.body
   console.log('/merge postData' + JSON.stringify(postData))
   console.log('/merge request' + JSON.stringify(ctx))
 
-  // 上传文件请求处理
+  // Upload file request processing
   let result = { success: false }
   let serverFilePath = path.join(__dirname, '../../server', 'upload-files')
   console.log({ serverFilePath })
   // let postData = ctx.request.body
-  // 上传文件事件
+  // Upload file event
   result = await uploadFile(ctx, {
     fileType: path.join('update-file-parts'),
     path: serverFilePath
@@ -60,7 +60,7 @@ router.post('/upload/:uploadId/part', async function (ctx, next) {
   ctx.body = result
 })
 
-/// 文件合并
+/// File merge
 router.post('/merge', async function (ctx, next) {
   let postData = ctx.request.body
   console.log('/merge postData' + JSON.stringify(postData))
@@ -82,13 +82,13 @@ router.post('/merge', async function (ctx, next) {
       if (!fs.existsSync(saveDir)) {
         fs.mkdirSync(saveDir)
       }
-      // 合并文件块
+      // Merge file blocks
       const savePath = filePath(uploadId)
       files.forEach((file) => {
         const content = fs.readFileSync(path.join(serverFilePartsPath, file))
         fs.appendFileSync(savePath, content)
       })
-      // 删除文件块
+      // Delete file blocks
       fs.rm(
         serverFilePartsPath,
         {

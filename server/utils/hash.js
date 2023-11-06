@@ -1,6 +1,6 @@
 const SparkMD5 =require('spark-md5')
 /**
- * @description: md加密
+ * @description: md encryption
  * }
  * @return {*}
  */

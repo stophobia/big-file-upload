@@ -1,7 +1,7 @@
 export interface FileUploadChunk {
-  index: number // 分片索引
-  // md5Digest?: string // 分片MD5
-  // exist: boolean // 分片是否已上传
+  index: number // Sharded index
+  // md5Digest?: string // Split MD5
+  // exist: boolean // Whether the fragment has been uploaded
 }
 
 export interface FileChunk {
@@ -12,16 +12,16 @@ export interface FileChunk {
 }
 
 export interface FileUploadCheckParams {
-  name: string // 文件名
-  size: number // 文件大小
-  partSize: number // 分片大小
-  lastModified: number // 文件修改时间
+  name: string // file name
+  size: number // file size
+  partSize: number // Part size
+  lastModified: number // File modification time
 }
 
-/// 检测文件返回值
+/// Check file return value
 export interface FileUploadCheckResult {
-  uploadId: string // 文件上传记录标识，md5(name=xxx.xxxsize=1234lastModified=16628000) 作为唯一标识
-  partCount: number //分片数量
-  data: FileUploadChunk[] // 历史分片列表
-  finish: boolean // 是否存在
+  uploadId: string // File upload record identifier, md5(name=xxx.xxxsize=1234lastModified=16628000) as the unique identifier
+  partCount: number //Number of shards
+  data: FileUploadChunk[] // Historical shard list
+  finish: boolean // Does it exist?
 }

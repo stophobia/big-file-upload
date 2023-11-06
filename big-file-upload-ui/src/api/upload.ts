@@ -38,8 +38,8 @@ export async function mergeFileChunks(uploadId: string) {
   return r.data
 }
 
-/// 1.检测上传文件状态。是否已经上传完成、上传进度
-// 文件已上传返回什么？
+// 1. Check the uploaded file status. Whether the upload has been completed and the upload progress
+// What is returned after the file has been uploaded?
 /// check file
 export async function fileUploadCheck(
   file: File,
@@ -47,9 +47,9 @@ export async function fileUploadCheck(
 ): Promise<FileUploadCheckResult> {
   const r = await axios.post('/file/upload/check', {
     name: file.name,
-    size: file.size, // 文件大小
-    partSize: chunkSize, // 分片大小
-    lastModified: file.lastModified // 文件修改时间
+    size: file.size, // File size
+    partSize: chunkSize, // fragment size
+    lastModified: file.lastModified // File modification time
   })
   console.log(r)
   return r.data as FileUploadCheckResult
